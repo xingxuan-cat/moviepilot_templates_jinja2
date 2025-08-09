@@ -6,6 +6,6 @@
 ### 格式参考
 - 电影
   - `中文标题名` _ `英文标题名` (`年份`)/`中文标题` - `分辨率` `片源版本`.`流媒体平台` `视频编码`_`色彩深度` `音频编码`_`声道数`ch.`Atoms` `动态范围` `额外参数` - `压制组`.`后缀名`
-  - `流浪地球` _ `The Wandering Earth` (`2019`)/`流浪地球` - `4K` `Web-Rip`.`Netflix` `HEVC`_`10bit` `TrueHD`_`7.1`ch.`Atoms` `DolbyVision_Profile8.1` `IMAX` - `压制组`.mkv
+  - `流浪地球` _ `The Wandering Earth` (`2019`)/`流浪地球` - `4K` `Web-Rip`.`Netflix` `HEVC`_`10bit` `TrueHD`_`7.1`ch.`Atoms` `DolbyVision_Profile8.1` `IMAX` - `压制组`.`mkv`
 
 其他待更新
