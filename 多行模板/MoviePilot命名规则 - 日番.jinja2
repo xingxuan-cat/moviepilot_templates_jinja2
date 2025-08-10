@@ -1,0 +1,124 @@
+{# 小写处理：将发行组名和原文件名统一转小写 #}
+{% set rgl = releaseGroup | lower %}
+{% set onl = original_name | lower %}
+
+{# 初始化 namespace 用于保存匹配到的音频、webrip 平台等信息 #}
+{% set ns = namespace(audio=[], webrip='', matched='') %}
+
+{# 定义 BluRay-Rip 的常见发行组 #}
+{% set edition_mod_bd = ['vcb-studio','mozzi2','mai','ye','mawen1250','acgnation'] %}
+
+{# 定义 Web-Rip 的常见发行组 #}
+{% set edition_mod_web = ['lolihouse'] %}
+
+{# 判断版式类型（优先级：BDRemux > BluRay-Rip > Web-Rip） #}
+{% set edition_mod = 
+    'BluRay-Remux' if 'bdremux' in onl 
+    else 'BluRay-Rip' if edition_mod_bd | select('in', rgl) | list | length > 0 
+    else 'Web-Rip' if edition_mod_web | select('in', rgl) | list | length > 0 and not edition 
+    else edition 
+%}
+
+{# 定义 WebRip 平台别名映射 #}
+{% set WebRip_dict = {
+  'CR': ['cr', 'crystal'],
+  'Baha': ['baha','bahamut'],
+  'BiliBili-Global': ['B-Global'],
+  'BiliBili': ['bilibili'],
+  'ABEMA': ['abema']
+} %}
+
+{# 从原文件名中识别所属的 WebRip 平台 #}
+{% for x, aliases in WebRip_dict.items() %}
+  {% if ns.webrip == '' %}
+    {% for alias in aliases %}
+      {% if alias in onl %}
+        {% set ns.webrip = x %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+{# 识别位深度（bit depth） #}
+{% set bitdepth_list = ['8bit', '10bit', '12bit'] %}
+{% set audio_bd = [] %}
+{% for b in bitdepth_list %}
+  {% if b in onl %}
+    {% set _ = audio_bd.append(b) %}
+  {% endif %}
+{% endfor %}
+{% set bitdepth_mod = audio_bd | last if audio_bd else '' %}
+
+{# 音频编码别名表 #}
+{% set audio_dict = {
+  'PCM': ['pcm'],
+  'TrueHD': ['truehd'],
+  'DTS-HD MA': ['dts-hd ma','dts-hd.ma','dts-hd_ma',"dts-hd.master"],
+  'DTS-HD': ['dts-hd','dts hd','dts hd'],
+  'DTS': ['dts','dts5.1'],
+  'FLAC': ['flac'],
+  'OPUS': ['opus'],
+  'DDP': ['ddp','eac3','dd+'],
+  'DD': ['dd','ac3','ac-3'],
+  'AAC': ['aac']
+} %}
+
+{# 标准音频顺序（用于输出时排序） #}
+{% set standard_audio_list = ['AAC', 'DD', 'DDP', 'FLAC', 'OPUS', 'DTS', 'DTS-HD', 'DTS-HD MA', 'TrueHD', 'PCM'] %}
+
+{# 在原文件名中查找对应的音频编码 #}
+{% for x in standard_audio_list %}
+  {% set ns.matched = false %}
+  {% for alias in audio_dict[x] %}
+    {% if not ns.matched and alias in onl %}
+      {% set ns.audio = ns.audio + [x] %}
+      {% set ns.matched = true %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+{# 去除 DTS-HD MA 含 DTS-HD 或 DTS 重复的情况 #}
+{% if 'DTS-HD MA' in ns.audio %}
+  {% set ns.audio = ns.audio | reject('equalto', 'DTS-HD') | reject('equalto', 'DTS') | list %}
+{% elif 'DTS-HD' in ns.audio %}
+  {% set ns.audio = ns.audio | reject('equalto', 'DTS') | list %}
+{% endif %}
+
+{# 去除 DDP 包含 DD 的重复 #}
+{% if 'DDP' in ns.audio %}
+  {% set ns.audio = ns.audio | reject('equalto', 'DD') | list %}
+{% endif %}
+
+{# 最终拼接音频字符串 #}
+{% set audio_mod = ns.audio | join('&') %}
+
+{# 输出文件名初始部分：视频格式大写 #}
+{% set out = videoFormat | upper %}
+
+{# 拼接版式信息 #}
+{% if edition_mod %}
+  {% set out = out ~ ' ' ~ edition_mod %}
+{% endif %}
+
+{# 拼接 webrip 平台 #}
+{% if ns.webrip %}
+  {% set out = out ~ '.' ~ ns.webrip %}
+{% endif %}
+
+{# 拼接视频编码与位深度 #}
+{% if videoCodec %}
+  {% set out = out ~ ' ' ~ videoCodec %}
+  {% if bitdepth_mod %}
+    {% set out = out ~ '_' ~ bitdepth_mod %}
+  {% endif %}
+{% elif bitdepth_mod %}
+  {% set out = out ~ ' ' ~ bitdepth_mod %}
+{% endif %}
+
+{# 拼接音频编码信息 #}
+{% if audio_mod %}
+  {% set out = out ~ ' ' ~ audio_mod %}
+{% endif %}
+
+{# 最终完整路径输出 #}
+{{ title }} _ {{ en_title }} _ {{ original_title }} ({{ year }})/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
