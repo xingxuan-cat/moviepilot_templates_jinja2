@@ -9,7 +9,7 @@
 {% set edition_mod_bd = ['vcb-studio','moozzi2','mai','ye','mawen1250','acgnation'] %}
 
 {# 定义 Web-Rip 的常见发行组 #}
-{% set edition_mod_web = ['lolihouse'] %}
+{% set edition_mod_web = ['lolihouse','sakurato','dynamis one'] %}
 
 {# 判断版式类型（优先级：BDRemux > BluRay-Rip > Web-Rip） #}
 {% set edition_mod = 
@@ -98,11 +98,9 @@
 {# 拼接版式信息 #}
 {% if edition_mod %}
   {% set out = out ~ ' ' ~ edition_mod %}
-{% endif %}
-
-{# 拼接 webrip 平台 #}
-{% if ns.webrip %}
-  {% set out = out ~ '.' ~ ns.webrip %}
+  {% if ns.webrip %}
+    {% set out = out ~ '.' ~ ns.webrip %}
+  {% endif %}
 {% endif %}
 
 {# 拼接视频编码与位深度 #}
