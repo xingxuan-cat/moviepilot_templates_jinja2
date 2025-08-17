@@ -11,6 +11,41 @@
   ) %}
 
 
+{#可以使用的外部变脸
+
+title : TMDB/豆瓣中的中文标题
+en_title : TMDB中的英文标题 (不支持豆瓣)
+original_title : TMDB/豆瓣中的原语种标题
+name : 从文件名中识别的名称 (同时存在中英文时，优先使用中文)
+en_name : 从文件名中识别的英文名称 (可能为空)
+year : 年份
+resourceType : 资源类型
+effect : 特效
+edition : 版本
+videoFormat : 视频格式
+releaseGroup : 发行组
+videoCodec : 视频编码
+audioCodec : 音频编码
+tmdbid : TMDB ID
+imdbid : IMDB ID
+doubanid : 豆瓣ID
+part : 段/节/部分
+fileExt : 文件扩展名 (包括.)
+customization : 自定义占位符 [在自定义规则中不需要使用]
+webSource : 流媒体平台
+
+# 以下是电视剧专属的
+
+season : 季
+season_year : 季的年份
+episode : 集
+season_episode : 季集 (SxxExx)
+episode_title : 集标题
+episode_date : 集首播日期
+
+
+}
+
 {# ==================================================================================== #}
 
 {# 提取色彩深度 #} {# 正常 #}
@@ -262,7 +297,8 @@
 {# ==================================================================================== #}
 
 {# 拼接输出参数 #}
-{% if resourceType | upper %}
+{% set out = videoFormat | upper %}
+{% if resourceType %}
   {% set out = out ~ ' ' ~ resourceType | upper%}
   {% if ns.webrip %}
     {% set out = out ~ '.' ~ ns.webrip %}
