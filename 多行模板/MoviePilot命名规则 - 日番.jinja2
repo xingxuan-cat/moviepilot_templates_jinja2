@@ -15,8 +15,8 @@
 {% set edition_mod = 
     'BluRay-Remux' if 'bdremux' in onl 
     else 'BluRay-Rip' if edition_mod_bd | select('in', rgl) | list | length > 0 
-    else 'Web-Rip' if edition_mod_web | select('in', rgl) | list | length > 0 and not edition 
-    else edition 
+    else 'Web-Rip' if edition_mod_web | select('in', rgl) | list | length > 0 and not resourceType 
+    else resourceType 
 %}
 
 {# 定义 WebRip 平台别名映射 #}

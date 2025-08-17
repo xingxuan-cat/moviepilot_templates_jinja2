@@ -13,10 +13,28 @@
 
 {# ==================================================================================== #}
 
-
 {# 提取色彩深度 #} {# 正常 #}
 {% set bit_depth_list = ['8bit','10bit','12bit'] %}
 {% set bit_depth = (bit_depth_list | select('in', onl) | list | last) or '' %}
+
+{# ==================================================================================== #}
+{# ==================================================================================== #}
+{# ==================================================================================== #}
+{#根据发行组修改片源版本#}
+
+{# 定义 BluRay-Rip 的常见发行组 #}
+{% set edition_mod_bd = ['vcb-studio','moozzi2','mai','ye','mawen1250','acgnation'] %}
+
+{# 定义 Web-Rip 的常见发行组 #}
+{% set edition_mod_web = ['lolihouse','sakurato','dynamis one'] %}
+
+{# 判断版式类型（优先级：BluRay-Remux > BluRay-Rip > Web-Rip） #}
+{% set edition_mod = 
+    'BluRay-Remux' if 'bdremux' in onl 
+    else 'BluRay-Rip' if edition_mod_bd | select('in', rgl) | list | length > 0 
+    else 'Web-Rip' if edition_mod_web | select('in', rgl) | list | length > 0 and not resourceType 
+    else resourceType 
+%}
 
 {# ==================================================================================== #}
 {# ==================================================================================== #}
@@ -244,11 +262,10 @@
 {# ==================================================================================== #}
 
 {# 拼接输出参数 #}
-{% set out = videoFormat | upper %}
-{% if resourceType %}
-  {% set out = out ~ ' ' ~ resourceType | upper %}
-  {% if ns.WebRip %}
-    {% set out = out ~ '.' ~ ns.WebRip %}
+{% if resourceType | upper %}
+  {% set out = out ~ ' ' ~ resourceType | upper%}
+  {% if ns.webrip %}
+    {% set out = out ~ '.' ~ ns.webrip %}
   {% endif %}
 {% endif %}
 {% if videoCodec %}
