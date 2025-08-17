@@ -8,7 +8,7 @@
   - `中文标题名` _ `英文标题名` (`年份`)/`中文标题` - `分辨率` `片源版本`.`流媒体平台` `视频编码`\_`色彩深度` `音频编码`\_`声道数`ch.`Atoms` `动态范围`_`细分版本` `额外参数` - `压制组`.`后缀名`
   - ---
   - `流浪地球` _ `The Wandering Earth` (`2019`)/`流浪地球` - `4K` `Web-Rip`.`Netflix` `HEVC`\_`10bit` `TrueHD`\_`7.1`ch.`Atoms` `DolbyVision`\_`Profile8.1` `IMAX` - `压制组`.`mkv`
-  - `The.Wandering.Earth.2019.2160p.WebRip.NF.DoVi.P8.1.hevc.10bit.Atmos.TrueHD.7.1.IMAX-压制组.mkv`
+    - `The.Wandering.Earth.2019.2160p.WebRip.NF.DoVi.P8.1.hevc.10bit.Atmos.TrueHD.7.1.IMAX-压制组.mkv`
 - ## 日番
   - 目前已对`VCB-Studio`,`LoliHouse`,`Mooozzi2`,`mawen1250`等组的不标片源版本的问题进行了适配 (注:并未对LoliHouse的BluRay-Rip资源进行适配)
   - `中文标题名` _ `英文标题名` _ `原文标题名` (`年份`)/`中文标题` - `分辨率` `片源版本`.`流媒体平台` `视频编码`_`色彩深度` `音频编码` - `压制组`.`后缀名`
@@ -21,8 +21,13 @@
     - `[Moozzi2] Lucky Star - 01 (BD 1920x1080 x.264 Flac).mkv`
   - `章鱼哔的原罪` _ `Takopi's Original Sin` _ `タコピーの原罪` (`2025`)/`章鱼哔的原罪` - `S01E01` - `1080P` `Web-Rip`.`Baha` `AVC` `AAC` - `ANi`.`mp4`
     - `[ANi] 章魚嗶的原罪 - 01 [1080P][Baha][WEB-DL][AAC AVC][CHT].mp4`
+- ## 动画电影
+  - `中文标题名` _ `原文标题名` (`年份`)/`中文标题` - `分辨率` `片源版本`.`流媒体平台` `视频编码`\_`色彩深度` `音频编码`\_`声道数`ch.`Atoms` `额外参数` - `压制组`.`后缀名`
   - ---
-  - 注:直接复制列表可能和目标并不一样，需要搭配合适的替换模板，例如我是喜欢将2160P替换成4K的，若需要替换词请自行研究适合你自己的。(等替换列表弄规整点，或许会公开)
+  - `吹响吧！上低音号 剧场版：欢迎来到北宇治高中吹奏乐部` _ `劇場版 響け！ユーフォニアム～北宇治高校吹奏楽部へようこそ～` (`2016`)/`吹响吧！上低音号 剧场版：欢迎来到北宇治高中吹奏乐部` - `4K` `BluRay-Rip` `HEVC` `FLAC`_`5.1`ch - `MAI`.`mkv`
+    - `[MAI] Gekijouban Hibike! Euphonium Kitauji Koukou Suisougaku Bu e Youkoso [Ma10p_2160p][x265_flac5.1_ass].mkv`
+- ---
+  - 注:直接复制规则可能和示例并不完全一样，需要搭配合适的替换模板，例如我是喜欢将2160P替换成4K的，若需要替换词请自行研究适合你自己的。(等替换列表弄规整点，或许会公开)
 ### 其他
 - #### 额外参数 
 对于现在能识别的额外参数支持的有：`IMAX`,`3D`,`60FPS`,`120FPS` 如果你有好的额外参数识别欢迎提出is
