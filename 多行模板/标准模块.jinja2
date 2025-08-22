@@ -22,7 +22,7 @@ year : 年份
 resourceType : 资源类型
 effect : 特效
 edition : 版本
-videoFormat : 视频格式
+videoFormat : 分辨率
 releaseGroup : 发行组
 videoCodec : 视频编码
 audioCodec : 音频编码
@@ -89,7 +89,7 @@ episode_date : 集首播日期
   'DisneyPlus': ['disneyplus', 'disney+', 'disney_plus'],
   'HBO': ['hbo', 'hbo max', 'hbomax'],
   'YouTubePremium': ['youtube', 'ytpremium', 'ytp'],
-  'AppleTV': ['appletv', 'apple tv', 'apple_tv','APTV'],
+  'AppleTV': ['appletv', 'apple tv', 'apple_tv','aptv'],
   'Crunchyroll': ['crunchyroll', 'crunchy'],
   'Funimation': ['funimation', 'funi'],
   'Vimeo': ['vimeo'],
@@ -246,8 +246,7 @@ episode_date : 集首播日期
 {# ==================================================================================== #}
 {# ==================================================================================== #}
 
-
-{# 提取动态范围 #} {# 正常 #}
+{# 提取动态范围 #} {# 正常 #} {# 需要 ns.dr #}
 
 {# Dolby Vision Profile 别名字典 #}
 {% set dv_dict = {
@@ -288,6 +287,7 @@ episode_date : 集首播日期
 
 {# 提取额外参数 #} {# 正常 #}
 
+{# 提取额外参数 #}
 {% for t in ['3d','imax','60fps','120fps'] %}
   {% if t in onl %}
     {% set upper = t | upper %}
@@ -297,6 +297,7 @@ episode_date : 集首播日期
   {% endif %}
 {% endfor %}
 
+{# 赋值提取到的额外参数 #}
 {% set extra = ns.extra_list | join(' ') %}
 
 
@@ -305,11 +306,13 @@ episode_date : 集首播日期
 {# ==================================================================================== #}
 
 {# 拼接输出参数 #}
+
 {% set out = videoFormat | upper %}
-{% if resourceType %}
-  {% set out = out ~ ' ' ~ resourceType | upper%}
-  {% if ns.webrip %}
-    {% set out = out ~ '.' ~ ns.webrip %}
+
+{% if edition_mod or resourceType %}
+  {% set out = out ~ ' ' ~ (edition_mod if edition_mod else resourceType) %}
+  {% if ns.WebRip %}
+    {% set out = out ~ '.' ~ ns.WebRip %}
   {% endif %}
 {% endif %}
 {% if videoCodec %}
