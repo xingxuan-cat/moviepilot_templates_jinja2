@@ -49,21 +49,20 @@ episode_date : 集首播日期
 {# ==================================================================================== #}
 
 {# 提取色彩深度 #} {# 正常 #}
+
 {% set bit_depth_list = ['8bit','10bit','12bit'] %}
 {% set bit_depth = (bit_depth_list | select('in', onl) | list | last) or '' %}
 
 {# ==================================================================================== #}
 {# ==================================================================================== #}
 {# ==================================================================================== #}
+
 {#根据发行组修改片源版本#}
 
-{# 定义 BluRay-Rip 的常见发行组 #}
-{% set edition_mod_bd = ['vcb-studio','moozzi2','mai','ye','mawen1250','acgnation'] %}
+{% set edition_mod_bd = ['vcb-studio','moozzi2','mai','ye','mawen1250','acgnation'] %} {# 定义 BluRay-Rip 的常见发行组 #}
+{% set edition_mod_web = ['lolihouse','sakurato','dynamis one'] %} {# 定义 Web-Rip 的常见发行组 #}
 
-{# 定义 Web-Rip 的常见发行组 #}
-{% set edition_mod_web = ['lolihouse','sakurato','dynamis one'] %}
-
-{# 判断版式类型（优先级：BluRay-Remux > BluRay-Rip > Web-Rip） #}
+{# 根据字幕组替换片源版本（优先级BluRay-Remux > BluRay-Rip > Web-Rip）#}
 {% set edition_mod = 
     'BluRay-Remux' if 'bdremux' in onl 
     else 'BluRay-Rip' if edition_mod_bd | select('in', rgl) | list | length > 0 
@@ -75,7 +74,9 @@ episode_date : 集首播日期
 {# ==================================================================================== #}
 {# ==================================================================================== #}
 
-{# 提取发行平台 #} {# 正常 #}
+{# 提取Web发行平台 #} {# 正常 #}
+
+{# 定义Web发行平台别名对照词典 #} {# 待优化 #}
 {% set WebRip_dict = {
   'CR': ['cr', 'crunchyroll'],
   'Baha': ['baha', 'bahamut'],
@@ -103,6 +104,7 @@ episode_date : 集首播日期
   'MangoTV': ['mangotv', '芒果tv', 'mgtv'],
 } %}
 
+{# 提取Web发行平台 #} {# 需要 ns.WebRip #}
 {% for platform, aliases in WebRip_dict.items() %}
   {% if ns.WebRip == '' %}
     {% for alias in aliases %}
@@ -117,7 +119,9 @@ episode_date : 集首播日期
 {# ==================================================================================== #}
 {# ==================================================================================== #}
 
-{# 提取音频编码 #}
+{# 提取音频编码 #} {# 正常 #} {# 需要 ns.audio #}
+
+{# 定义音频编码别名对照词典 #}
 {% set audio_dict = {
   'PCM': ['pcm'],
   'TrueHD': ['truehd'],
@@ -131,10 +135,11 @@ episode_date : 集首播日期
   'AAC': ['aac']
 } %}
 
-{% set standard_audio_list = ['AAC','DD','DDP','FLAC','OPUS','DTS','DTS-HD','DTS-HD MA','TrueHD','PCM'] %} {# 定义匹配优先级顺序 (从低到高)#}
-{% set standard_audio_list = ['PCM','TrueHD','DTS-HD MA','DTS-HD','DTS','FLAC','OPUS','DDP','DD','AAC'] %} {# 定义匹配优先级顺序 (从高到低)#}
+{# 使用时二选一#}
+{% set standard_audio_list = ['AAC','DD','DDP','FLAC','OPUS','DTS','DTS-HD','DTS-HD MA','TrueHD','PCM'] %} {# 定义匹配优先级顺序 (从低到高)#} {# 例:AAC&FLAC #}
+{% set standard_audio_list = ['PCM','TrueHD','DTS-HD MA','DTS-HD','DTS','FLAC','OPUS','DDP','DD','AAC'] %} {# 定义匹配优先级顺序 (从高到低)#} {# 例:FLAC&AAC #}
 
-{# 在原文件名中查找对应的音频编码 #}
+{# 提取音频编码 #}
 {% for x in standard_audio_list %}
   {% set ns.matched = false %}
   {% for alias in audio_dict[x] %}
@@ -145,27 +150,28 @@ episode_date : 集首播日期
   {% endfor %}
 {% endfor %}
 
-{# 去除 DTS-HD MA 含 DTS-HD 或 DTS 重复的情况 #}
+{# DTS去重 #} {# 未对 DTS,DTS-HD,DTS-HD MA 同时存在的情况做适配 #}
 {% if 'DTS-HD MA' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DTS-HD') | reject('equalto', 'DTS') | list %}
 {% elif 'DTS-HD' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DTS') | list %}
 {% endif %}
 
-{# 去除 DDP 包含 DD 的重复 #}
+{# DD去重 #} {# 未对 DD,DDP (AC3,EAC3) 同时存在的情况做适配 #}
 {% if 'DDP' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DD') | list %}
 {% endif %}
 
-{# 最终拼接音频字符串 #}
+{# 输出模块 #}
 {% set audio_mod = ns.audio | join('&') %}
 
 {# ==================================================================================== #}
 {# ==================================================================================== #}
 {# ==================================================================================== #}
 
+{# 提取音频参数 (包含声道数与Atmos) #} {# 正常 #} {# 需要 ns.audio AND ns.channel #}
 
-{# 提取音频参数 (包含声道数与Atmos) #} {# 正常 #}
+{# 定义音频编码别名对照词典 #}
 {% set audio_dict = {
   'PCM': ['pcm'],
   'TrueHD': ['truehd'],
@@ -179,9 +185,11 @@ episode_date : 集首播日期
   'AAC': ['aac']
 } %}
 
-{% set standard_audio_list = ['PCM','TrueHD','DTS-HD MA','DTS-HD','DTS','FLAC','OPUS','DDP','DD','AAC'] %} {# 定义匹配优先级顺序 (从高到低)#}
+{# 使用时二选一#}
+{% set standard_audio_list = ['AAC','DD','DDP','FLAC','OPUS','DTS','DTS-HD','DTS-HD MA','TrueHD','PCM'] %} {# 定义匹配优先级顺序 (从低到高)#} {# 例:AAC&FLAC #}
+{% set standard_audio_list = ['PCM','TrueHD','DTS-HD MA','DTS-HD','DTS','FLAC','OPUS','DDP','DD','AAC'] %} {# 定义匹配优先级顺序 (从高到低)#} {# 例:FLAC&AAC #}
 
-{# 在原文件名中查找对应的音频编码 #}
+{# 提取音频编码 #}
 {% for x in standard_audio_list %}
   {% set ns.matched = false %}
   {% for alias in audio_dict[x] %}
@@ -192,43 +200,43 @@ episode_date : 集首播日期
   {% endfor %}
 {% endfor %}
 
-{# 去除 DTS-HD MA 含 DTS-HD 或 DTS 重复的情况 #}
+{# DTS去重 #} {# 未对 DTS,DTS-HD,DTS-HD MA 同时存在的情况做适配 #}
 {% if 'DTS-HD MA' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DTS-HD') | reject('equalto', 'DTS') | list %}
 {% elif 'DTS-HD' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DTS') | list %}
 {% endif %}
 
-{# 去除 DDP 包含 DD 的重复 #}
+{# DD去重 #} {# 未对 DD,DDP (AC3,EAC3) 同时存在的情况做适配 #}
 {% if 'DDP' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DD') | list %}
 {% endif %}
 
-{# 声道匹配#}
+{# 提取声道数 #}
 
-{# 特例处理 #}
+{# 特例 #}
 {% if '5.1.2audio' in onl %}
   {% set ns.channel = '5.1ch' %}
 {% endif %}
 
-{# 常规匹配循环 #}
+{# 提取声道数 #}
 {% for x in ['7.1.4','7.1.2','7.1','5.1.4','5.1.2','5.1','2.0'] %}
   {% if ns.channel == '' and ('.' ~ x in onl or x in onl) %}
     {% set ns.channel = x ~ 'ch' %}
   {% endif %}
 {% endfor %}
 
-
 {# 提取Atmos标记 #}
+
 {% set atmos = 'Atmos' if 'atmos' in onl else '' %}
 
-{# 拼接完整音频参数 #}
+{# 拼接完整参数 #}
 {% set audio_mod = ns.audio | join('&') %}
 {% if audio_mod and ns.channel %}
   {% set audio_mod = audio_mod ~ '_' ~ ns.channel %}
-{% endif %}
-{% if audio_mod and atmos %}
-  {% set audio_mod = audio_mod ~ '.' ~ atmos %}
+  {% if audio_mod and atmos %}
+    {% set audio_mod = audio_mod ~ '.' ~ atmos %}
+    {% endif %}
 {% endif %}
 {% if not audio_mod %}
   {% set audio_mod = audioCodec %}

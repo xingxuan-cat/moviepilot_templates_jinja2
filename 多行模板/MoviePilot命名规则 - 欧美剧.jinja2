@@ -120,6 +120,41 @@
   {% set audio_mod = audioCodec %}
 {% endif %}
 
+{# 提取动态范围 #} {# 正常 #} {# 需要 ns.dr #}
+
+{# Dolby Vision Profile 别名字典 #}
+{% set dv_dict = {
+  'DolbyVision_Profile8.1': ['p8.1'],
+  'DolbyVision_Profile8': ['p8'],
+  'DolbyVision_Profile7': ['p7'],
+  'DolbyVision_Profile5': ['p5'],
+  'DolbyVision': ['dv', 'dovi', 'dolbyvision', 'dolby.vision', 'dolby_vision']
+} %}
+
+{# HDR Profile 别名字典 #}
+{% set hdr_dict = {
+  'HDR_HDR10+': ['hdr10+', 'hdr10plus', 'hdr10_plus'],
+  'HDR_HDR10': ['hdr10'],
+  'HDR_HLG': ['hlg'],
+  'HDR': ['hdr']
+} %}
+
+{# 匹配 DolbyVision #}
+{% for profile, aliases in dv_dict.items() %}
+  {% if ns.dr == 'SDR' and aliases | select('in', onl) | list | length > 0 %}
+    {% set ns.dr = profile %}
+  {% endif %}
+{% endfor %}
+
+{#  匹配HDR #}
+{% if ns.dr == 'SDR' %}
+  {% for profile, aliases in hdr_dict.items() %}
+    {% if ns.dr == 'SDR' and aliases | select('in', onl) | list | length > 0 %}
+      {% set ns.dr = profile %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
 {# 定义额外参数#}
 {% for t in ['3d','imax','60fps','120fps'] %}
   {% if t in onl %}
@@ -136,8 +171,8 @@
 {% set out = videoFormat | upper %}
 {% if resourceType %}
   {% set out = out ~ ' ' ~ resourceType %}
-  {% if ns.webrip %}
-    {% set out = out ~ '.' ~ ns.webrip %}
+  {% if ns.WebRIp %}
+    {% set out = out ~ '.' ~ ns.WebRip %}
   {% endif %}
 {% endif %}
 {% if videoCodec %}
@@ -147,6 +182,9 @@
   {% endif %}
 {% endif %}
 {% if audio_mod %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
+{% if ns.dr != "SDR" %}
+  {% set out = out ~ ' ' ~ ns.dr %}
+{% endif %}
 {% if extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
 
 {{ title }} _ {{ en_title }} ({{ year }})/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
