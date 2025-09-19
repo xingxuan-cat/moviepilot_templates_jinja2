@@ -45,7 +45,7 @@
   - P8：`DolbyVision_Profile8`
   - P8.1：`DolbyVision_Profile8.1`
 - 关于HDR
-  - 当未识别到细分版本时：`HDR
+  - 当未识别到细分版本时：`HDR`
     - HDR10：`HDR_HDR10`
     - HDR10+：`HDR_HDR10+`
     - HLG：`HDR_HLG`
