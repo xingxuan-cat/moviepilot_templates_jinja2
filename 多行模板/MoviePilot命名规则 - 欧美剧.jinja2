@@ -139,19 +139,25 @@
   'HDR': ['hdr']
 } %}
 
+{% set tokens = onl.replace('.', ' ').replace('_', ' ').replace('-', ' ').split() %}
+
 {# 匹配 DolbyVision #}
 {% for profile, aliases in dv_dict.items() %}
-  {% if ns.dr == 'SDR' and aliases | select('in', onl) | list | length > 0 %}
-    {% set ns.dr = profile %}
-  {% endif %}
-{% endfor %}
-
-{#  匹配HDR #}
-{% if ns.dr == 'SDR' %}
-  {% for profile, aliases in hdr_dict.items() %}
-    {% if ns.dr == 'SDR' and aliases | select('in', onl) | list | length > 0 %}
+  {% for alias in aliases %}
+    {% if ns.dr == 'SDR' and alias in tokens %}
       {% set ns.dr = profile %}
     {% endif %}
+  {% endfor %}
+{% endfor %}
+
+{# 匹配 HDR #}
+{% if ns.dr == 'SDR' %}
+  {% for profile, aliases in hdr_dict.items() %}
+    {% for alias in aliases %}
+      {% if ns.dr == 'SDR' and alias in tokens %}
+        {% set ns.dr = profile %}
+      {% endif %}
+    {% endfor %}
   {% endfor %}
 {% endif %}
 
