@@ -193,4 +193,4 @@
 {% if ns.dr %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
 {% if extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
 
-{{ title }} _ {{ en_title }} _ ({{ year }})/{{title}} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
+{{ title }} _ {{ en_title }} ({{ year }})/{{title}} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
