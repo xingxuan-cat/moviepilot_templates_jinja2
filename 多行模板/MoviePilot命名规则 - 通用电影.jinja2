@@ -177,20 +177,20 @@
 {% set extra = ns.extra_list | join(' ') %}
 
 {% set out = videoFormat | upper %}
-{% if resourceType %}
+{% if resourceType is defined and resourceType %}
   {% set out = out ~ ' ' ~ resourceType %}
-  {% if ns.WebRip %}
+  {% if ns.WebRip is defined and ns.WebRip %}
     {% set out = out ~ '.' ~ ns.WebRip %}
   {% endif %}
 {% endif %}
-{% if videoCodec %}
+{% if videoCodec is defined and videoCodec %}
   {% set out = out ~ ' ' ~ videoCodec %}
-  {% if bit_depth %}
+  {% if bit_depth is defined and bit_depth %}
     {% set out = out ~ '_' ~ bit_depth %}
   {% endif %}
 {% endif %}
-{% if audio_mod %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
-{% if ns.dr %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
-{% if extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
+{% if audio_mod is defined and audio_mod %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
+{% if ns.dr is defined and ns.dr %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
+{% if extra is defined and extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
 
 {{ title }} _ {{ en_title }} ({{ year }})/{{title}} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}

@@ -193,22 +193,24 @@
 
 {#拼接输出参数 #}
 {% set out = videoFormat | upper %}
-{% if edition_mod %}
+
+{% if edition_mod is defined %}
   {% set out = out ~ ' ' ~ edition_mod %}
-  {% if ns.WebRip %}
+  {% if ns.WebRip is defined %}
     {% set out = out ~ '.' ~ ns.WebRip %}
   {% endif %}
 {% endif %}
-{% if videoCodec %}
+
+{% if videoCodec is defined %}
   {% set out = out ~ ' ' ~ videoCodec %}
-  {% if bit_depth %}
+  {% if bit_depth is defined %}
     {% set out = out ~ '_' ~ bit_depth %}
   {% endif %}
 {% endif %}
-{% if audio_mod %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
-{% if ns.dr != "SDR" %}
-  {% set out = out ~ ' ' ~ ns.dr %}
-{% endif %}
-{% if extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
+
+{% if audio_mod is defined %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
+{% if ns.dr is defined and ns.dr != "SDR" %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
+{% if extra is defined %}{% set out = out ~ ' ' ~ extra %}{% endif %}
+
 
 {{ title }} _ {{ original_title }} ({{ year }})/{{title}} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}

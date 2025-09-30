@@ -165,7 +165,6 @@ episode_date : 集首播日期
 {# 输出模块 #}
 {% if ns.audio %}
   {% set audio_mod = ns.audio | join('&') %}
-{% endif %}
 {% elif audioCodec %}
   {% set audio_mod = audioCodec %}
 {% endif %}
@@ -216,8 +215,6 @@ episode_date : 集首播日期
 {% if 'DDP' in ns.audio %}
   {% set ns.audio = ns.audio | reject('equalto', 'DD') | list %}
 {% endif %}
-
-{# 提取声道数 #}
 
 {# 特例 #}
 {% if '5.1.2audio' in onl %}
@@ -320,21 +317,24 @@ episode_date : 集首播日期
 
 {% set out = videoFormat | upper %}
 
-{% if edition_mod or resourceType %}
-  {% set out = out ~ ' ' ~ (edition_mod if edition_mod else resourceType) %}
-  {% if ns.WebRip %}
+{% if edition_mod is defined or resourceType is defined %}
+  {% set out = out ~ ' ' ~ (edition_mod if edition_mod is defined else resourceType) %}
+  {% if ns.WebRip is defined %}
     {% set out = out ~ '.' ~ ns.WebRip %}
   {% endif %}
 {% endif %}
-{% if videoCodec %}
+
+{% if videoCodec is defined %}
   {% set out = out ~ ' ' ~ videoCodec %}
-  {% if bit_depth %}
+  {% if bit_depth is defined %}
     {% set out = out ~ '_' ~ bit_depth %}
   {% endif %}
 {% endif %}
-{% if audio_mod %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
-{% if ns.dr %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
-{% if extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
+
+{% if audio_mod is defined %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
+{% if ns.dr is defined %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
+{% if extra is defined %}{% set out = out ~ ' ' ~ extra %}{% endif %}
+
 
 {# ==================================================================================== #}
 {# ==================================================================================== #}

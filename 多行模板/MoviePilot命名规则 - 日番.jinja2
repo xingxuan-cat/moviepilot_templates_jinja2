@@ -92,37 +92,38 @@
 {# 最终拼接音频字符串 #}
 {% if ns.audio %}
   {% set audio_mod = ns.audio | join('&') %}
-{% endif %}
 {% elif audioCodec %}
   {% set audio_mod = audioCodec %}
 {% endif %}
+
 
 
 {# 输出文件名初始部分：视频格式大写 #}
 {% set out = videoFormat | upper %}
 
 {# 拼接版式信息 #}
-{% if edition_mod %}
+{% if edition_mod is defined and edition_mod %}
   {% set out = out ~ ' ' ~ edition_mod %}
-  {% if ns.webrip %}
+  {% if ns.webrip is defined and ns.webrip %}
     {% set out = out ~ '.' ~ ns.webrip %}
   {% endif %}
 {% endif %}
 
 {# 拼接视频编码与位深度 #}
-{% if videoCodec %}
+{% if videoCodec is defined and videoCodec %}
   {% set out = out ~ ' ' ~ videoCodec %}
-  {% if bitdepth_mod %}
+  {% if bitdepth_mod is defined and bitdepth_mod %}
     {% set out = out ~ '_' ~ bitdepth_mod %}
   {% endif %}
-{% elif bitdepth_mod %}
+{% elif bitdepth_mod is defined and bitdepth_mod %}
   {% set out = out ~ ' ' ~ bitdepth_mod %}
 {% endif %}
 
 {# 拼接音频编码信息 #}
-{% if audio_mod %}
+{% if audio_mod is defined and audio_mod %}
   {% set out = out ~ ' ' ~ audio_mod %}
 {% endif %}
+
 
 {# 最终完整路径输出 #}
 {{ title }} _ {{ en_title }} _ {{ original_title }} ({{ year }})/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
