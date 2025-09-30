@@ -12,6 +12,7 @@
 - ## 日番
   - 目前已对`VCB-Studio`,`LoliHouse`,`Mooozzi2`,`mawen1250`等组的不标片源版本的问题进行了适配 (注:并未对`LoliHouse`,`喵萌奶茶屋`等Web组的BluRay-Rip资源进行适配)
   - `中文标题名` _ `英文标题名` _ `原文标题名` (`年份`)/Season `季数`/`中文标题` - `季集数` `分辨率` `片源版本`.`流媒体平台` `视频编码`_`色彩深度` `音频编码` - `压制组`.`后缀名`
+  - 详情请看[发行组支持列表](https://github.com/xingxuan-cat/moviepilot_templates_jinja2/blob/master/%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE%E9%A1%B9/%E5%8F%91%E8%A1%8C%E7%BB%84%E5%91%BD%E5%90%8D%E6%A0%BC%E5%BC%8F%20%E5%85%BC%E5%AE%B9%E6%80%A7%E6%94%AF%E6%8C%81.md)
   - ---
   - `轻音少女` _ `K-ON!` _ `けいおん!` (`2009`)/`Season 1`/`轻音少女` - `S01E01` - `1080P` `BluRay-Rip` `HEVC` `AAC`&`FLAC` - `VCB-Studio`.`mkv`
     - `[VCB-Studio] K-ON! [01][Ma10p_1080p][x265_flac_2aac].mkv`
