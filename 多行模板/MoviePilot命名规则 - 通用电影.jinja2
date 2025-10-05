@@ -193,4 +193,10 @@
 {% if ns.dr is defined and ns.dr %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
 {% if extra is defined and extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
 
-{{ title }} _ {{ en_title }} ({{ year }})/{{title}} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
+{% set full_name = title ~ " _ " ~  en_title ~ " (" ~ year ~ ")" ~ "/" ~ title ~ " - " ~ out ~ (releaseGroup if releaseGroup else "") ~ fileExt %}
+
+{% if full_name | length > 180 %}
+  {{ title }} ({{ year }})/{{ title }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
+{% else %}
+  {{ full_name }}
+{% endif %}

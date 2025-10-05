@@ -338,10 +338,13 @@ episode_date : 集首播日期
 
 {# ==================================================================================== #}
 {# ==================================================================================== #}
-{# ==================================================================================== #}
+{# ==================================================================================== #
 
-{# 输出文件名 #}
-{# 电视剧/动漫 #}
-{{ title }} _ {{ en_title }} _ {{ original_title }} ({{ year }})/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
-{# 电影 #}
-{{ title }} _ {{ en_title }} _ {{ original_title }} ({{ year }})/{{title}} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
+{# 根据文件总长度判断总命名防止文件路径过长 #}
+{% set full_name = title ~ " _ " ~ en_title ~ " _ " ~ original_title ~ " (" ~ year ~ ")" ~ "/Season " ~ season ~ "/" ~ title ~ " - " ~ season_episode ~ " - " ~ out ~ (releaseGroup if releaseGroup else "") ~ fileExt %}
+
+{% if full_name | length > 220 %}
+  {{ title }} ("{{ year }}")/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
+{% else %}
+  {{ full_name }}
+{% endif %}
