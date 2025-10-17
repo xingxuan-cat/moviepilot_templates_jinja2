@@ -1,0 +1,204 @@
+{# 依赖 #} {# 正常 #}
+{% set onl = original_name | lower %} {# 小写原文件名#}
+{% set rgl = releaseGroup | lower %} {# 小写发行组名 #}
+{% set ns = namespace(
+  WebRip='',
+  audio=[],
+  matched=false,
+  dr='SDR',
+  extra_list=[],
+  channel='',
+  ) %}
+
+  {# 提取色彩深度 #} {# 正常 #}
+{% set bit_depth_list = ['8bit','10bit','12bit'] %}
+{% set bit_depth = (bit_depth_list | select('in', onl) | list | last) or '' %}
+
+{# 提取发行平台 #} {# 正常 #}
+{% set WebRip_dict = {
+  'CR': ['cr', 'crunchyroll'],
+  'Baha': ['baha', 'bahamut'],
+  'BiliBili-Global': ['b-global'],
+  'BiliBili': ['bilibili'],
+  'ABEMA': ['abema'],
+  'Netflix': ['netflix', 'nfx','nf'],
+  'Amazon': ['prime', 'amazonprime', 'amzn'],
+  'Hulu': ['hulu'],
+  'DisneyPlus': ['disneyplus', 'disney+', 'disney_plus'],
+  'HBO': ['hbo', 'hbo max', 'hbomax'],
+  'YouTubePremium': ['youtube', 'ytpremium', 'ytp'],
+  'AppleTV': ['appletv', 'apple tv', 'apple_tv','atvp'],
+  'Crunchyroll': ['crunchyroll', 'crunchy'],
+  'Funimation': ['funimation', 'funi'],
+  'Vimeo': ['vimeo'],
+  'Peacock': ['peacock'],
+  'ParamountPlus': ['paramount+', 'paramountplus', 'paramount_plus'],
+  'DAZN': ['dazn'],
+  'Tubi': ['tubi'],
+  'RakutenTV': ['rakuten', 'rakutentv'],
+  'Tencent Video': ['tencent', 'tencentvideo'],
+  'iQIYI': ['iqiyi', '爱奇艺', 'iqy'],
+  'Youku': ['youku', '优酷'],
+  'MangoTV': ['mangotv', '芒果tv', 'mgtv'],
+} %}
+
+{% for platform, aliases in WebRip_dict.items() %}
+  {% if ns.WebRip == '' %}
+    {% for alias in aliases %}
+      {% if alias | lower in onl %}
+        {% set ns.WebRip = platform %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+{# 提取音频参数 (包含声道数与Atmos) #} {# 正常 #}
+{% set audio_dict = {
+  'PCM': ['pcm'],
+  'TrueHD': ['truehd'],
+  'DTS-HD MA': ['dts-hd ma','dts-hd.ma','dts-hd_ma','dts-hd.master'],
+  'DTS-HD': ['dts-hd','dts hd'],
+  'DTS': ['dts','dts5.1'],
+  'FLAC': ['flac'],
+  'OPUS': ['opus'],
+  'DDP': ['ddp','eac3','dd+'],
+  'DD': ['dd','ac3','ac-3'],
+  'AAC': ['aac']
+} %}
+
+{% set standard_audio_list = ['PCM','TrueHD','DTS-HD MA','DTS-HD','DTS','FLAC','OPUS','DDP','DD','AAC'] %} {# 定义匹配优先级顺序 (从高到低)#}
+
+{# 在原文件名中查找对应的音频编码 #}
+{% for x in standard_audio_list %}
+  {% set ns.matched = false %}
+  {% for alias in audio_dict[x] %}
+    {% if not ns.matched and alias in onl %}
+      {% set ns.audio = ns.audio + [x] %}
+      {% set ns.matched = true %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+{# 去除 DTS-HD MA 含 DTS-HD 或 DTS 重复的情况 #}
+{% if 'DTS-HD MA' in ns.audio %}
+  {% set ns.audio = ns.audio | reject('equalto', 'DTS-HD') | reject('equalto', 'DTS') | list %}
+{% elif 'DTS-HD' in ns.audio %}
+  {% set ns.audio = ns.audio | reject('equalto', 'DTS') | list %}
+{% endif %}
+
+{# 去除 DDP 包含 DD 的重复 #}
+{% if 'DDP' in ns.audio %}
+  {% set ns.audio = ns.audio | reject('equalto', 'DD') | list %}
+{% endif %}
+
+{# 声道匹配#}
+
+{# 特例处理 #}
+{% if '5.1.2audio' in onl %}
+  {% set ns.channel = '5.1ch' %}
+{% endif %}
+
+{# 常规匹配循环 #}
+{% for x in ['7.1.4','7.1.2','7.1','5.1.4','5.1.2','5.1','2.0'] %}
+  {% if ns.channel == '' and ('.' ~ x in onl or x in onl) %}
+    {% set ns.channel = x ~ 'ch' %}
+  {% endif %}
+{% endfor %}
+
+{# 提取Atmos标记 #}
+{% set atmos = 'Atmos' if 'atmos' in onl else '' %}
+
+{# 拼接完整音频参数 #}
+{% set audio_mod = ns.audio | join('&') %}
+{% if audio_mod and ns.channel %}
+  {% set audio_mod = audio_mod ~ '_' ~ ns.channel %}
+{% endif %}
+{% if audio_mod and atmos %}
+  {% set audio_mod = audio_mod ~ '.' ~ atmos %}
+{% endif %}
+{% if not audio_mod %}
+  {% set audio_mod = audioCodec %}
+{% endif %}
+
+{# 提取动态范围 #} {# 正常 #} {# 需要 ns.dr #}
+
+{# Dolby Vision Profile 别名字典 #}
+{% set dv_dict = {
+  'DolbyVision_Profile8.1': ['p8.1'],
+  'DolbyVision_Profile8': ['p8'],
+  'DolbyVision_Profile7': ['p7'],
+  'DolbyVision_Profile5': ['p5'],
+  'DolbyVision': ['dv', 'dovi', 'dolbyvision', 'dolby.vision', 'dolby_vision']
+} %}
+
+{# HDR Profile 别名字典 #}
+{% set hdr_dict = {
+  'HDR_HDR10+': ['hdr10+', 'hdr10plus', 'hdr10_plus'],
+  'HDR_HDR10': ['hdr10'],
+  'HDR_HLG': ['hlg'],
+  'HDR': ['hdr']
+} %}
+
+{% set tokens = onl.replace('.', ' ').replace('_', ' ').replace('-', ' ').split() %}
+
+{# 匹配 DolbyVision #}
+{% for profile, aliases in dv_dict.items() %}
+  {% for alias in aliases %}
+    {% if ns.dr == 'SDR' and alias in tokens %}
+      {% set ns.dr = profile %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+{# 匹配 HDR #}
+{% if ns.dr == 'SDR' %}
+  {% for profile, aliases in hdr_dict.items() %}
+    {% for alias in aliases %}
+      {% if ns.dr == 'SDR' and alias in tokens %}
+        {% set ns.dr = profile %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+
+{# 定义额外参数#}
+{% for t in ['3d','imax','60fps','120fps'] %}
+  {% if t in onl %}
+    {% set upper = t | upper %}
+    {% if upper not in ns.extra_list %}
+      {% set ns.extra_list = ns.extra_list + [upper] %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% set extra = ns.extra_list | join(' ') %}
+
+{#拼接输出参数 #}
+{% set out = videoFormat | upper %}
+
+{% if resourceType is defined and resourceType %}
+  {% set out = out ~ ' ' ~ resourceType %}
+  {% if ns.WebRip is defined and ns.WebRip %}
+    {% set out = out ~ '.' ~ ns.WebRip %}
+  {% endif %}
+{% endif %}
+
+{% if videoCodec is defined and videoCodec %}
+  {% set out = out ~ ' ' ~ videoCodec %}
+  {% if bit_depth is defined and bit_depth %}
+    {% set out = out ~ '_' ~ bit_depth %}
+  {% endif %}
+{% endif %}
+
+{% if audio_mod is defined and audio_mod %}{% set out = out ~ ' ' ~ audio_mod %}{% endif %}
+{% if ns.dr is defined and ns.dr != "SDR" %}{% set out = out ~ ' ' ~ ns.dr %}{% endif %}
+{% if extra is defined and extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
+
+
+{% set full_name = title ~ " _ " ~ en_title ~ " _ " ~ " (" ~ year ~ ")" ~ "/Season " ~ season ~ "/" ~ title ~ " - " ~ season_episode ~ " - " ~ out ~ ((" - " ~ releaseGroup) if releaseGroup else "") ~ fileExt %}
+
+{% if full_name | length > 180 %}
+  {{ title }} ({{ year }})/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
+{% else %}
+  {{ full_name }}
+{% endif %}
