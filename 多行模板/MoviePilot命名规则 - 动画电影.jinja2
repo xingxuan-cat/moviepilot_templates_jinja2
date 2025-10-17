@@ -213,7 +213,7 @@
 {% if extra is defined %}{% set out = out ~ ' ' ~ extra %}{% endif %}
 
 
-{% set full_name = title ~ " _ " ~  original_title ~ " (" ~ year ~ ")" ~ "/" ~ title ~ " - " ~ out ~ (releaseGroup if releaseGroup else "") ~ fileExt %}
+{% set full_name = title ~ " _ " ~  original_title ~ " (" ~ year ~ ")" ~ "/" ~ title ~ " - " ~ out ~ ((" - " ~ releaseGroup) if releaseGroup else "") ~ fileExt %}
 
 {% if full_name | length > 180 %}
   {{ title }} ({{ year }})/{{ title }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
