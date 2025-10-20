@@ -1,4 +1,5 @@
 ## 适用于[MoviePilot](https://github.com/jxxghp/MoviePilot)的重命名规则模板
+所有模板都基于文件名提取
 提供了多行模板与单行模板，若无需修改格式可直接使用单行版。
 ### 使用方法 （推荐使用方法1以便根据二级分类使用不同的重命名模板）
 1. 添加到智能重命名 - 插件配置中使用，格式为`二级分类名称：重命名模板`，二级分类名称参考[Wiki](https://wiki.movie-pilot.org/zh/advanced#%E4%BA%8C%E7%BA%A7%E5%88%86%E7%B1%BB%E7%AD%96%E7%95%A5)
