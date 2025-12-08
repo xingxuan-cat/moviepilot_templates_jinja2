@@ -195,7 +195,7 @@
 {% if extra is defined and extra %}{% set out = out ~ ' ' ~ extra %}{% endif %}
 
 
-{% set full_name = title ~ " _ " ~ en_title ~ " _ " ~ " (" ~ year ~ ")" ~ "/Season " ~ season ~ "/" ~ title ~ " - " ~ season_episode ~ " - " ~ out ~ ((" - " ~ releaseGroup) if releaseGroup else "") ~ fileExt %}
+{% set full_name = title ~ " _ " ~ en_title ~ " (" ~ year ~ ")" ~ "/Season " ~ season ~ "/" ~ title ~ " - " ~ season_episode ~ " - " ~ out ~ ((" - " ~ releaseGroup) if releaseGroup else "") ~ fileExt %}
 
 {% if full_name | length > 180 %}
   {{ title }} ({{ year }})/Season {{ season }}/{{ title }} - {{ season_episode }} - {{ out }}{% if releaseGroup %} - {{ releaseGroup }}{% endif %}{{ fileExt }}
